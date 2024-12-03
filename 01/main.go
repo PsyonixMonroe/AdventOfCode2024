@@ -55,6 +55,28 @@ func GetDiff(left []int, right []int) int {
 	return diff
 }
 
+func GetSim(left []int, right []int) int {
+	index := map[int]int{}
+	for _, rightNum := range right {
+		_, found := index[rightNum]
+		if !found {
+			index[rightNum] = 0
+		}
+		index[rightNum] = index[rightNum] + 1
+	}
+
+	simScore := 0
+	for _, leftNum := range left {
+		value, found := index[leftNum]
+		if !found {
+			value = 0
+		}
+		simScore += leftNum * value
+	}
+
+	return simScore
+}
+
 func intAbs(value int) int {
 	if value < 0 {
 		return -value

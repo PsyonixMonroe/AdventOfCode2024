@@ -27,7 +27,7 @@ func TestSample1(t *testing.T) {
 }
 
 func TestFull1(t *testing.T) {
-	t.Logf("\n==== Testing Sample input for Problem 1 ====\n")
+	t.Logf("\n==== Testing Full input for Problem 1 ====\n")
 
 	left, right := ReadInput("input.txt")
 	if len(left) == 0 {
@@ -43,4 +43,42 @@ func TestFull1(t *testing.T) {
 	right = slices.Sorted[int](slices.Values(right))
 	diff := GetDiff(left, right)
 	assert.Equal(t, diff, 2367773)
+}
+
+func TestSample2(t *testing.T) {
+	t.Logf("\n==== Testing Sample input for Problem 2 ====\n")
+
+	left, right := ReadInput("test.txt")
+	if len(left) == 0 {
+		t.Fatalf("Didn't get any left input\n")
+	}
+	if len(right) == 0 {
+		t.Fatalf("Didn't get any right input\n")
+	}
+	if len(left) != len(right) {
+		t.Fatalf("Left and Right have different number of items: %d - %d\n", len(left), len(right))
+	}
+	left = slices.Sorted[int](slices.Values(left))
+	right = slices.Sorted[int](slices.Values(right))
+	simScore := GetSim(left, right)
+	assert.Equal(t, simScore, 31)
+}
+
+func TestFull2(t *testing.T) {
+	t.Logf("\n==== Testing Full input for Problem 2 ====\n")
+
+	left, right := ReadInput("input.txt")
+	if len(left) == 0 {
+		t.Fatalf("Didn't get any left input\n")
+	}
+	if len(right) == 0 {
+		t.Fatalf("Didn't get any right input\n")
+	}
+	if len(left) != len(right) {
+		t.Fatalf("Left and Right have different number of items: %d - %d\n", len(left), len(right))
+	}
+	left = slices.Sorted[int](slices.Values(left))
+	right = slices.Sorted[int](slices.Values(right))
+	simScore := GetSim(left, right)
+	assert.Equal(t, simScore, 21271939)
 }
