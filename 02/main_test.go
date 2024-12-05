@@ -73,3 +73,23 @@ func TestPart1Full(t *testing.T) {
 	count := CountSafe(reports)
 	assert.Equal(t, count, 257)
 }
+
+func TestPart2Sample(t *testing.T) {
+	reports := ParseInput("test.txt")
+	if len(reports) == 0 {
+		t.Fatal("Failed to read in input file")
+	}
+
+	count := CountSafeDamp(reports)
+	assert.Equal(t, count, 4)
+}
+
+func TestPart2Full(t *testing.T) {
+	reports := ParseInput("input.txt")
+	if len(reports) == 0 {
+		t.Fatal("Failed to read in input file")
+	}
+
+	count := CountSafeDamp(reports)
+	assert.Equal(t, count, 257)
+}
