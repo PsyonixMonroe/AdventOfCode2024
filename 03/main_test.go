@@ -19,3 +19,17 @@ func TestFullPart1(t *testing.T) {
 	sum := ProcessCommands(commands)
 	assert.Equal(t, sum, 183788984)
 }
+
+func TestSamplePart2(t *testing.T) {
+	input := ReadInput("test2.txt")
+	commands := ParseMult2(input)
+	sum := ProcessCommands(commands)
+	assert.Equal(t, sum, 48)
+}
+
+func TestFullPart2(t *testing.T) {
+	input := ReadInput("input.txt")
+	commands := ParseMult2(input)
+	sum := ProcessCommands(commands)
+	assert.Equal(t, sum, 62098619)
+}
