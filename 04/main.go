@@ -26,7 +26,6 @@ func (c CrossWord) Print() {
 }
 
 func (c CrossWord) loc(row int, column int) int {
-	// fmt.Fprintf(os.Stderr, "[%d, %d] - Columns: %d\n", row, column, c.columns)
 	return row*c.columns + column
 }
 
@@ -76,7 +75,6 @@ func FindXmas(crossword CrossWord) int {
 			current := crossword.Get(i, j)
 			if current == 'X' {
 				xmasCount += CountAllWays(crossword, i, j)
-				// fmt.Fprintf(os.Stderr, "[%d, %d - %s]: UpdatedCount: %d\n", i, j, string(current), xmasCount)
 			}
 		}
 	}
@@ -112,8 +110,6 @@ func CountAllWays(crossword CrossWord, row int, column int) int {
 		count++
 	}
 
-	// fmt.Fprintf(os.Stderr, "[%d, %d]: Found Counts: %d\n", row, column, count)
-
 	return count
 }
 
@@ -125,8 +121,6 @@ func CheckVerticalUp(crossword CrossWord, row int, column int) bool {
 	expectM := crossword.Get(row-1, column)
 	expectA := crossword.Get(row-2, column)
 	expectS := crossword.Get(row-3, column)
-
-	// fmt.Fprintf(os.Stderr, "Up %s %s %s %s\n", string(crossword.Get(row, column)), string(expectM), string(expectA), string(expectS))
 
 	return expectX == 'X' && expectM == 'M' && expectA == 'A' && expectS == 'S'
 }
@@ -140,8 +134,6 @@ func CheckDiagonalUpRight(crossword CrossWord, row int, column int) bool {
 	expectA := crossword.Get(row-2, column+2)
 	expectS := crossword.Get(row-3, column+3)
 
-	// fmt.Fprintf(os.Stderr, "UpRight %s %s %s %s\n", string(crossword.Get(row, column)), string(expectM), string(expectA), string(expectS))
-
 	return expectX == 'X' && expectM == 'M' && expectA == 'A' && expectS == 'S'
 }
 
@@ -153,8 +145,6 @@ func CheckHorizontalRight(crossword CrossWord, row int, column int) bool {
 	expectM := crossword.Get(row, column+1)
 	expectA := crossword.Get(row, column+2)
 	expectS := crossword.Get(row, column+3)
-
-	// fmt.Fprintf(os.Stderr, "Right %s %s %s %s\n", string(crossword.Get(row, column)), string(expectM), string(expectA), string(expectS))
 
 	return expectX == 'X' && expectM == 'M' && expectA == 'A' && expectS == 'S'
 }
@@ -168,8 +158,6 @@ func CheckDiagonalDownRight(crossword CrossWord, row int, column int) bool {
 	expectA := crossword.Get(row+2, column+2)
 	expectS := crossword.Get(row+3, column+3)
 
-	// fmt.Fprintf(os.Stderr, "DownRight %s %s %s %s\n", string(crossword.Get(row, column)), string(expectM), string(expectA), string(expectS))
-
 	return expectX == 'X' && expectM == 'M' && expectA == 'A' && expectS == 'S'
 }
 
@@ -177,13 +165,10 @@ func CheckVerticalDown(crossword CrossWord, row int, column int) bool {
 	if row >= (crossword.rows - 3) {
 		return false
 	}
-	// fmt.Fprintf(os.Stderr, "Down [%d, %d] - Max: %d\n", row, column, crossword.rows)
 	expectX := crossword.Get(row, column)
 	expectM := crossword.Get(row+1, column)
 	expectA := crossword.Get(row+2, column)
 	expectS := crossword.Get(row+3, column)
-
-	// fmt.Fprintf(os.Stderr, "Down %s %s %s %s\n", string(crossword.Get(row, column)), string(expectM), string(expectA), string(expectS))
 
 	return expectX == 'X' && expectM == 'M' && expectA == 'A' && expectS == 'S'
 }
@@ -197,8 +182,6 @@ func CheckDiagonalDownLeft(crossword CrossWord, row int, column int) bool {
 	expectA := crossword.Get(row+2, column-2)
 	expectS := crossword.Get(row+3, column-3)
 
-	// fmt.Fprintf(os.Stderr, "DownLeft %s %s %s %s\n", string(crossword.Get(row, column)), string(expectM), string(expectA), string(expectS))
-
 	return expectX == 'X' && expectM == 'M' && expectA == 'A' && expectS == 'S'
 }
 
@@ -210,8 +193,6 @@ func CheckHorizontalLeft(crossword CrossWord, row int, column int) bool {
 	expectM := crossword.Get(row, column-1)
 	expectA := crossword.Get(row, column-2)
 	expectS := crossword.Get(row, column-3)
-
-	// fmt.Fprintf(os.Stderr, "Left %s %s %s %s\n", string(crossword.Get(row, column)), string(expectM), string(expectA), string(expectS))
 
 	return expectX == 'X' && expectM == 'M' && expectA == 'A' && expectS == 'S'
 }
@@ -225,7 +206,110 @@ func CheckDiagonalUpLeft(crossword CrossWord, row int, column int) bool {
 	expectA := crossword.Get(row-2, column-2)
 	expectS := crossword.Get(row-3, column-3)
 
-	// fmt.Fprintf(os.Stderr, "UpLeft %s %s %s %s\n", string(crossword.Get(row, column)), string(expectM), string(expectA), string(expectS))
-
 	return expectX == 'X' && expectM == 'M' && expectA == 'A' && expectS == 'S'
+}
+
+func FindXmas2(crossword CrossWord) int {
+	count := 0
+	for i := range crossword.rows {
+		for j := range crossword.columns {
+			current := crossword.Get(i, j)
+			if current == 'A' {
+				found := CheckXMAS(crossword, i, j)
+				if found {
+					count++
+				}
+			}
+		}
+	}
+
+	return count
+}
+
+func CheckXMAS(crossword CrossWord, row int, column int) bool {
+	checkMASTop := CheckMAS1(crossword, row, column)
+	checkMASRight := CheckMAS2(crossword, row, column)
+	checkMASBottom := CheckMAS3(crossword, row, column)
+	checkMASLeft := CheckMAS4(crossword, row, column)
+	return checkMASTop || checkMASRight || checkMASBottom || checkMASLeft
+}
+
+func CheckMAS1(crossword CrossWord, row int, column int) bool {
+	// M   M
+	//	 A
+	// S   S
+	if row < 1 || row >= crossword.rows-1 {
+		return false
+	}
+	if column < 1 || column >= crossword.columns-1 {
+		return false
+	}
+
+	topLeft := crossword.Get(row-1, column-1)
+	topRight := crossword.Get(row-1, column+1)
+	center := crossword.Get(row, column)
+	bottomLeft := crossword.Get(row+1, column-1)
+	bottomRight := crossword.Get(row+1, column+1)
+
+	return topLeft == 'M' && topRight == 'M' && center == 'A' && bottomLeft == 'S' && bottomRight == 'S'
+}
+
+func CheckMAS2(crossword CrossWord, row int, column int) bool {
+	// S   S
+	//   A
+	// M   M
+	if row < 1 || row >= crossword.rows-1 {
+		return false
+	}
+	if column < 1 || column >= crossword.columns-1 {
+		return false
+	}
+
+	topLeft := crossword.Get(row-1, column-1)
+	topRight := crossword.Get(row-1, column+1)
+	center := crossword.Get(row, column)
+	bottomLeft := crossword.Get(row+1, column-1)
+	bottomRight := crossword.Get(row+1, column+1)
+
+	return topLeft == 'S' && topRight == 'S' && center == 'A' && bottomLeft == 'M' && bottomRight == 'M'
+}
+
+func CheckMAS3(crossword CrossWord, row int, column int) bool {
+	// M   S
+	//   A
+	// M   S
+	if row < 1 || row >= crossword.rows-1 {
+		return false
+	}
+	if column < 1 || column >= crossword.columns-1 {
+		return false
+	}
+
+	topLeft := crossword.Get(row-1, column-1)
+	topRight := crossword.Get(row-1, column+1)
+	center := crossword.Get(row, column)
+	bottomLeft := crossword.Get(row+1, column-1)
+	bottomRight := crossword.Get(row+1, column+1)
+
+	return topLeft == 'M' && topRight == 'S' && center == 'A' && bottomLeft == 'M' && bottomRight == 'S'
+}
+
+func CheckMAS4(crossword CrossWord, row int, column int) bool {
+	// S   M
+	//   A
+	// S   M
+	if row < 1 || row >= crossword.rows-1 {
+		return false
+	}
+	if column < 1 || column >= crossword.columns-1 {
+		return false
+	}
+
+	topLeft := crossword.Get(row-1, column-1)
+	topRight := crossword.Get(row-1, column+1)
+	center := crossword.Get(row, column)
+	bottomLeft := crossword.Get(row+1, column-1)
+	bottomRight := crossword.Get(row+1, column+1)
+
+	return topLeft == 'S' && topRight == 'M' && center == 'A' && bottomLeft == 'S' && bottomRight == 'M'
 }

@@ -251,3 +251,25 @@ func TestFullPart1(t *testing.T) {
 	assert.Equal(t, count, 2562) // this is the accepted output, not sure why we get 1 additional
 	// assert.Equal(t, count, 2563)
 }
+
+func TestSamplePart2(t *testing.T) {
+	content := ReadInput("test.txt")
+	if content == "" {
+		t.Fatal("Failed to read content")
+	}
+
+	cw := ReadCrossword(content)
+	count := FindXmas2(cw)
+	assert.Equal(t, count, 9)
+}
+
+func TestFullPart2(t *testing.T) {
+	content := ReadInput("input.txt")
+	if content == "" {
+		t.Fatal("Failed to read content")
+	}
+
+	cw := ReadCrossword(content)
+	count := FindXmas2(cw)
+	assert.Equal(t, count, 1902)
+}
