@@ -12,13 +12,13 @@ type Rule struct {
 	after  int
 }
 
-func (r Rule) Apply(update Update) bool {
+func (r Rule) Apply(update Update) (bool, int, int) {
 	idxBefore := update.Index(r.before)
 	idxAfter := update.Index(r.after)
 	if idxBefore == -1 || idxAfter == -1 {
-		return true
+		return true, -1, -1
 	}
-	return idxBefore < idxAfter
+	return idxBefore < idxAfter, idxBefore, idxAfter
 }
 
 func (r Rule) String() string {
@@ -41,6 +41,12 @@ func (u Update) Index(page int) int {
 
 func (u Update) GetMiddle() int {
 	return u.pages[len(u.pages)/2]
+}
+
+func (u Update) Swap(idxA int, idxB int) {
+	i := u.pages[idxA]
+	u.pages[idxA] = u.pages[idxB]
+	u.pages[idxB] = i
 }
 
 func (u Update) String() string {
@@ -84,13 +90,44 @@ func CountGoodUpdates(rules []Rule, updates []Update) int {
 	for _, update := range updates {
 		pass := true
 		for _, rule := range rules {
-			pass = pass && rule.Apply(update)
+			pass, _, _ = rule.Apply(update)
 			if !pass {
 				break
 			}
 		}
 
 		if pass {
+			middleSum += update.GetMiddle()
+		}
+	}
+
+	return middleSum
+}
+
+func FixBadUpdate(rules []Rule, update *Update) {
+	for _, rule := range rules {
+		pass, idxB, idxA := rule.Apply(*update)
+		if !pass {
+			update.Swap(idxA, idxB)
+			FixBadUpdate(rules, update)
+			break
+		}
+	}
+}
+
+func FixBadUpdatesAndCount(rules []Rule, updates []Update) int {
+	middleSum := 0
+	for _, update := range updates {
+		failed := false
+		for _, rule := range rules {
+			pass, _, _ := rule.Apply(update)
+			if !pass {
+				failed = true
+				FixBadUpdate(rules, &update)
+			}
+		}
+
+		if failed {
 			middleSum += update.GetMiddle()
 		}
 	}
