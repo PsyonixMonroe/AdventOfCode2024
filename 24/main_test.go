@@ -1,7 +1,12 @@
 package main
 
-import "testing"
+import (
+	"testing"
 
-func TestMain(t *testing.T) {
-	t.Logf("Ran Test")
+	"github.com/go-playground/assert/v2"
+)
+
+func TestSimplePart1(t *testing.T) {
+	content := ReadInput("test.txt")
+	assert.NotEqual(t, content, "")
 }
