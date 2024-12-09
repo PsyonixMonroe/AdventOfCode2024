@@ -13,7 +13,7 @@ const (
 	DirRight = iota
 )
 
-type Map struct {
+type MapSimple struct {
 	room      []rune
 	rows      int
 	columns   int
@@ -22,7 +22,7 @@ type Map struct {
 	cursorDir int
 }
 
-func (m Map) loc(row int, column int) int {
+func (m MapSimple) loc(row int, column int) int {
 	if row < 0 {
 		fmt.Fprintf(os.Stderr, "Unable to find loc, row is negative: %d\n", row)
 		return -1
@@ -42,14 +42,14 @@ func (m Map) loc(row int, column int) int {
 	return row*m.columns + column
 }
 
-func (m Map) HasExitedRoom() bool {
+func (m MapSimple) HasExitedRoom() bool {
 	return m.cursorX < 0 ||
 		m.cursorY < 0 ||
 		m.cursorX >= m.columns ||
 		m.cursorY >= m.rows
 }
 
-func (m Map) IsBlocked(row int, column int) bool {
+func (m MapSimple) IsBlocked(row int, column int) bool {
 	if row < 0 || column < 0 || column >= m.columns || row >= m.rows {
 		// we need to allow movement OOB to determine HasExitedRoom()
 		// but don't want to call loc() for those locations
@@ -58,7 +58,7 @@ func (m Map) IsBlocked(row int, column int) bool {
 	return m.room[m.loc(row, column)] == '#'
 }
 
-func (m *Map) RotateCursor() {
+func (m *MapSimple) RotateCursor() {
 	switch m.cursorDir {
 	case DirUp:
 		m.cursorDir = DirRight
@@ -75,11 +75,11 @@ func (m *Map) RotateCursor() {
 	}
 }
 
-func (m Map) MarkLocation() {
+func (m MapSimple) MarkLocation() {
 	m.room[m.loc(m.cursorX, m.cursorY)] = 'X'
 }
 
-func (m *Map) MoveCursor() {
+func (m *MapSimple) MoveCursor() {
 	switch m.cursorDir {
 	case DirUp:
 		if m.IsBlocked(m.cursorX-1, m.cursorY) {
@@ -122,13 +122,13 @@ func ReadInput(filename string) string {
 	return string(content)
 }
 
-func ParseInput(content string) Map {
+func ParseInput(content string) MapSimple {
 	room := []rune{}
 	rows := strings.Split(content, "\n")
 	numRows := len(rows)
 	if numRows == 0 {
 		fmt.Fprintf(os.Stderr, "No Rows Found\n")
-		return Map{}
+		return MapSimple{}
 	}
 	numColumns := len(rows[0])
 	cursorX := 0
@@ -151,10 +151,10 @@ func ParseInput(content string) Map {
 		}
 	}
 
-	return Map{room: room, rows: numRows, columns: numColumns, cursorX: cursorX, cursorY: cursorY, cursorDir: cursorDir}
+	return MapSimple{room: room, rows: numRows, columns: numColumns, cursorX: cursorX, cursorY: cursorY, cursorDir: cursorDir}
 }
 
-func WalkMap(room *Map) {
+func WalkMap(room *MapSimple) {
 	for {
 		if room.HasExitedRoom() {
 			break
@@ -163,7 +163,7 @@ func WalkMap(room *Map) {
 	}
 }
 
-func CountPath(room Map) int {
+func CountPath(room MapSimple) int {
 	count := 0
 	for _, val := range room.room {
 		if val == 'X' {
