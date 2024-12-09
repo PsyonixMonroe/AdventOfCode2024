@@ -21,3 +21,17 @@ func TestFullPart1(t *testing.T) {
 	count := CountPath(room)
 	assert.Equal(t, count, 5516)
 }
+
+func TestSamplePart2(t *testing.T) {
+	content := ReadInput("test.txt")
+	room := ParseInputComplex(content)
+	count := WalkAllMaps(room)
+	assert.Equal(t, count, 6)
+}
+
+func TestFullPart2(t *testing.T) {
+	content := ReadInput("input.txt")
+	room := ParseInputComplex(content)
+	count := WalkAllMaps(room)
+	assert.Equal(t, count, 2008)
+}
