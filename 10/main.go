@@ -126,6 +126,62 @@ func WalkTrail(m TopoMap, currentRow int, currentColumn int) []int {
 	return summits
 }
 
+func FindScoreTrailHeads(m TopoMap) int {
+	sum := 0
+
+	for i := range m.rows {
+		for j := range m.columns {
+			if m.grid[m.loc(i, j)] == 0 {
+				sum += len(WalkTrailScore(m, i, j))
+			}
+		}
+	}
+
+	return sum
+}
+
+func WalkTrailScore(m TopoMap, currentRow int, currentColumn int) []int {
+	currentHeight := m.grid[m.loc(currentRow, currentColumn)]
+	if currentHeight == 9 {
+		return []int{m.loc(currentRow, currentColumn)}
+	}
+
+	summits := []int{}
+	if currentRow > 0 {
+		// check up
+		nextLoc := m.grid[m.loc(currentRow-1, currentColumn)]
+		if nextLoc == currentHeight+1 {
+			summits = append(summits, WalkTrailScore(m, currentRow-1, currentColumn)...)
+		}
+	}
+
+	if currentColumn > 0 {
+		// check left
+		nextLoc := m.grid[m.loc(currentRow, currentColumn-1)]
+		if nextLoc == currentHeight+1 {
+			summits = append(summits, WalkTrailScore(m, currentRow, currentColumn-1)...)
+		}
+	}
+
+	if currentRow < m.rows-1 {
+		// check down
+		nextLoc := m.grid[m.loc(currentRow+1, currentColumn)]
+		if nextLoc == currentHeight+1 {
+			summits = append(summits, WalkTrailScore(m, currentRow+1, currentColumn)...)
+		}
+	}
+
+	if currentColumn < m.columns-1 {
+		// check right
+		nextLoc := m.grid[m.loc(currentRow, currentColumn+1)]
+		if nextLoc == currentHeight+1 {
+			summits = append(summits, WalkTrailScore(m, currentRow, currentColumn+1)...)
+		}
+	}
+
+	return summits
+}
+
 func mergeDistinct(a []int, b []int) []int {
 	merged := make([]int, len(a))
 	copy(merged, a)

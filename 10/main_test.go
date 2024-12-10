@@ -53,3 +53,27 @@ func TestFullPart1(t *testing.T) {
 	sum := FindTrails(m)
 	assert.Equal(t, sum, 430)
 }
+
+func TestSample5Part2(t *testing.T) {
+	content := ReadInput("test5.txt")
+	assert.NotEqual(t, content, "")
+	m := ParseTopoMap(content)
+	sum := FindScoreTrailHeads(m)
+	assert.Equal(t, sum, 81)
+}
+
+func TestSample6Part2(t *testing.T) {
+	content := ReadInput("test6.txt")
+	assert.NotEqual(t, content, "")
+	m := ParseTopoMap(content)
+	sum := FindScoreTrailHeads(m)
+	assert.Equal(t, sum, 3)
+}
+
+func TestFullPart2(t *testing.T) {
+	content := ReadInput("input.txt")
+	assert.NotEqual(t, content, "")
+	m := ParseTopoMap(content)
+	sum := FindScoreTrailHeads(m)
+	assert.Equal(t, sum, 928)
+}
