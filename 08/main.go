@@ -138,3 +138,60 @@ func CountLocations(m Map) int {
 
 	return sum
 }
+
+func MarkPointsLine(m *Map) {
+	for i := range m.rows {
+		for j := range m.columns {
+			loc := m.locs[m.loc(i, j)]
+			if loc.station == '.' {
+				continue
+			}
+			MarkStationPointsLine(m, loc.station, i, j)
+		}
+	}
+}
+
+func MarkStationPointsLine(m *Map, originStation rune, originX int, originY int) {
+	for i := range m.rows {
+		for j := range m.columns {
+			loc := m.locs[m.loc(i, j)]
+			if loc.station == originStation {
+				// compute and mark points
+				if i == originX && j == originY {
+					continue
+				}
+				var rise, run int
+				var x1, y1, x2, y2 int
+				if originX < i {
+					rise, run = GetRiseAndRun(originX, originY, i, j)
+					x1 = originX - rise
+					y1 = originY - run
+					x2 = i + rise
+					y2 = j + run
+				} else {
+					rise, run = GetRiseAndRun(i, j, originX, originY)
+					x1 = i - rise
+					y1 = j - run
+					x2 = originX + rise
+					y2 = originY + run
+				}
+
+				for x1 >= 0 && x1 < m.rows && y1 >= 0 && y1 < m.columns {
+					// fmt.Fprintf(os.Stderr, "1: Marking [%d, %d] with %s from [%d, %d] and [%d, %d] rise: %d run: %d\n", x1, y1, string(originStation), originX, originY, i, j, rise, run)
+					m.locs[m.loc(x1, y1)].points = append(m.locs[m.loc(x1, y1)].points, originStation)
+					x1 -= rise
+					y1 -= run
+				}
+				for x2 >= 0 && x2 < m.rows && y2 >= 0 && y2 < m.columns {
+					// fmt.Fprintf(os.Stderr, "2: Marking [%d, %d] with %s from [%d, %d] and [%d, %d] rise: %d, run: %d\n", x2, y2, string(originStation), originX, originY, i, j, rise, run)
+					m.locs[m.loc(x2, y2)].points = append(m.locs[m.loc(x2, y2)].points, originStation)
+					x2 += rise
+					y2 += run
+				}
+
+				m.locs[m.loc(originX, originY)].points = append(m.locs[m.loc(originX, originY)].points, originStation)
+				m.locs[m.loc(i, j)].points = append(m.locs[m.loc(i, j)].points, originStation)
+			}
+		}
+	}
+}

@@ -39,3 +39,30 @@ func TestFullPart1(t *testing.T) {
 	sum := CountLocations(m)
 	assert.Equal(t, sum, 361)
 }
+
+func TestSimple1Part2(t *testing.T) {
+	content := ReadInput("test.txt")
+	assert.NotEqual(t, content, "")
+	m := ParseInput(content)
+	MarkPointsLine(&m)
+	sum := CountLocations(m)
+	assert.Equal(t, sum, 34)
+}
+
+func TestSimple2Part2(t *testing.T) {
+	content := ReadInput("test2.txt")
+	assert.NotEqual(t, content, "")
+	m := ParseInput(content)
+	MarkPointsLine(&m)
+	sum := CountLocations(m)
+	assert.Equal(t, sum, 9)
+}
+
+func TestFullPart2(t *testing.T) {
+	content := ReadInput("input.txt")
+	assert.NotEqual(t, content, "")
+	m := ParseInput(content)
+	MarkPointsLine(&m)
+	sum := CountLocations(m)
+	assert.Equal(t, sum, 1249)
+}
