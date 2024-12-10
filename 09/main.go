@@ -89,3 +89,87 @@ func Checksum(disk []int) int {
 	}
 	return sum
 }
+
+func DeFragFilesContiguous(disk *[]int) {
+	i := len(*disk) - 1
+	for {
+		fileStart, fileEnd := GetNextFileRange(*disk, i)
+		if fileStart < 0 {
+			break
+		}
+		freeSpaceStart := GetFreeSpace(*disk, fileEnd-fileStart+1, fileStart)
+		fmt.Fprintf(os.Stderr, "")
+		if freeSpaceStart > 0 {
+			swapFile(disk, fileStart, fileEnd, freeSpaceStart)
+		}
+		i = fileStart - 1
+		if i < 0 {
+			break
+		}
+	}
+}
+
+func swapFile(disk *[]int, start int, end int, freeSpaceStart int) {
+	count := 0
+	for _, i := range getRange(start, end+1) {
+		swap(disk, i, freeSpaceStart+count)
+		count++
+	}
+}
+
+func GetNextFileRange(disk []int, startPos int) (int, int) {
+	for _, endVal := range getRevRange(0, startPos+1) {
+		if disk[endVal] == -1 {
+			continue
+		}
+		fileID := disk[endVal]
+		for _, startVal := range getRevRange(0, endVal) {
+			if disk[startVal] == -1 || fileID != disk[startVal] {
+				return startVal + 1, endVal
+			}
+		}
+		return 0, endVal
+	}
+	fmt.Fprintf(os.Stderr, "Didn't find file from %d\n", startPos)
+	return -1, -1
+}
+
+func GetFreeSpace(disk []int, size int, fileLoc int) int {
+	for i := range len(disk) {
+		if i >= fileLoc {
+			return -1
+		}
+		if disk[i] == -1 {
+			found := true
+			for j := range size {
+				if disk[i+j] != -1 {
+					found = false
+					break
+				}
+			}
+			if found {
+				return i
+			}
+		}
+	}
+	return -1
+}
+
+func getRange(start int, end int) []int {
+	r := []int{}
+	for i := range end - start {
+		r = append(r, i+start)
+	}
+
+	return r
+}
+
+func getRevRange(start int, end int) []int {
+	r := getRange(start, end)
+	rev := []int{}
+	rLen := len(r)
+	for i := range rLen {
+		rev = append(rev, r[rLen-i-1])
+	}
+	return rev
+}
