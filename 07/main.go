@@ -91,3 +91,62 @@ func ProcessEquation(solution int, lhs int, args []int) int {
 
 	return 0
 }
+
+func SumGoodEquations2(equations []Equation) int {
+	sum := 0
+	for _, equation := range equations {
+		sum += ProcessEquation2(equation.solution, equation.args[0], equation.args[1:])
+	}
+
+	return sum
+}
+
+func ProcessEquation2(solution int, lhs int, args []int) int {
+	if len(args) == 0 {
+		if lhs == solution {
+			return solution
+		} else {
+			return 0
+		}
+	}
+
+	var mulSol int
+	var addSol int
+	var concatSol int
+	if len(args) == 1 {
+		mulSol = lhs * args[0]
+		addSol = lhs + args[0]
+		concatSol = concat(lhs, args[0])
+	} else {
+		mulSol = ProcessEquation2(solution, lhs*args[0], args[1:])
+		addSol = ProcessEquation2(solution, lhs+args[0], args[1:])
+		concatSol = ProcessEquation2(solution, concat(lhs, args[0]), args[1:])
+	}
+
+	if mulSol == solution {
+		return mulSol
+	}
+
+	if addSol == solution {
+		return addSol
+	}
+
+	if concatSol == solution {
+		return concatSol
+	}
+
+	return 0
+}
+
+func concat(a int, b int) int {
+	strA := strconv.Itoa(a)
+	strB := strconv.Itoa(b)
+
+	merged := strA + strB
+	parsed, err := strconv.Atoi(merged)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to parse concat %s\n", merged)
+	}
+
+	return parsed
+}

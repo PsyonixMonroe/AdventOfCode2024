@@ -42,3 +42,24 @@ func TestFullPart1(t *testing.T) {
 	sum := SumGoodEquations(eq)
 	assert.Equal(t, sum, 2654749936343)
 }
+
+func TestSimplePart2(t *testing.T) {
+	content := ReadInput("test.txt")
+	assert.NotEqual(t, content, "")
+	eq := ParseInput(content)
+	sum := SumGoodEquations2(eq)
+	assert.Equal(t, sum, 11387)
+}
+
+func TestFullPart2(t *testing.T) {
+	content := ReadInput("input.txt")
+	assert.NotEqual(t, content, "")
+	eq := ParseInput(content)
+	sum := SumGoodEquations2(eq)
+	assert.Equal(t, sum, 124060392153684)
+}
+
+func TestConcat(t *testing.T) {
+	value := concat(8, 6)
+	assert.Equal(t, value, 86)
+}
