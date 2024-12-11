@@ -5,6 +5,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/PsyonixMonroe/AOCLib/lib"
 )
 
 func ReadInput(filename string) string {
@@ -111,19 +113,19 @@ func DeFragFilesContiguous(disk *[]int) {
 
 func swapFile(disk *[]int, start int, end int, freeSpaceStart int) {
 	count := 0
-	for _, i := range getRange(start, end+1) {
+	for _, i := range lib.GetRange(start, end+1) {
 		swap(disk, i, freeSpaceStart+count)
 		count++
 	}
 }
 
 func GetNextFileRange(disk []int, startPos int) (int, int) {
-	for _, endVal := range getRevRange(0, startPos+1) {
+	for _, endVal := range lib.GetRevRange(0, startPos+1) {
 		if disk[endVal] == -1 {
 			continue
 		}
 		fileID := disk[endVal]
-		for _, startVal := range getRevRange(0, endVal) {
+		for _, startVal := range lib.GetRevRange(0, endVal) {
 			if disk[startVal] == -1 || fileID != disk[startVal] {
 				return startVal + 1, endVal
 			}
@@ -153,23 +155,4 @@ func GetFreeSpace(disk []int, size int, fileLoc int) int {
 		}
 	}
 	return -1
-}
-
-func getRange(start int, end int) []int {
-	r := []int{}
-	for i := range end - start {
-		r = append(r, i+start)
-	}
-
-	return r
-}
-
-func getRevRange(start int, end int) []int {
-	r := getRange(start, end)
-	rev := []int{}
-	rLen := len(r)
-	for i := range rLen {
-		rev = append(rev, r[rLen-i-1])
-	}
-	return rev
 }

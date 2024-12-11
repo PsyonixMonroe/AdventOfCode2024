@@ -47,18 +47,6 @@ func TestGetFreeSpace(t *testing.T) {
 	assert.Equal(t, freeSpaceStart, 6)
 }
 
-func TestGetRange(t *testing.T) {
-	r := getRange(2, 5)
-	expectedRange := []int{2, 3, 4}
-	assertEqual(t, r, expectedRange)
-}
-
-func TestGetRevRange(t *testing.T) {
-	r := getRevRange(5, 10)
-	expectedRange := []int{9, 8, 7, 6, 5}
-	assertEqual(t, r, expectedRange)
-}
-
 func TestSwap(t *testing.T) {
 	disk := []int{2, 2, 2, -1, -1, 3, -1, -1, -1, 4, 4, 5}
 	swapFile(&disk, 9, 10, 3)
