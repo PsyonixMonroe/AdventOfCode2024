@@ -55,3 +55,48 @@ func TestFullPart1(t *testing.T) {
 	stones = RunStonesSim(stones, 25)
 	assert.Equal(t, len(stones), 193269)
 }
+
+func TestSimplePart1Memo(t *testing.T) {
+	content := lib.ReadInput("test.txt")
+	assert.NotEqual(t, content, "")
+
+	stones := lib.ParseIntLineFields(content)
+	stonesCount := RunStoneSimMemo(stones, 1)
+	assert.Equal(t, stonesCount, len([]int{1, 2024, 1, 0, 9, 9, 2021976}))
+}
+
+func TestSimple2Part1Memo(t *testing.T) {
+	content := lib.ReadInput("test2.txt")
+	assert.NotEqual(t, content, "")
+
+	stones := lib.ParseIntLineFields(content)
+	stonesCount := RunStoneSimMemo(stones, 6)
+	assert.Equal(t, stonesCount, len([]int{2097446912, 14168, 4048, 2, 0, 2, 4, 40, 48, 2024, 40, 48, 80, 96, 2, 8, 6, 7, 6, 0, 3, 2}))
+}
+
+func TestSimple2LargePart1Memo(t *testing.T) {
+	content := lib.ReadInput("test2.txt")
+	assert.NotEqual(t, content, "")
+
+	stones := lib.ParseIntLineFields(content)
+	stonesCount := RunStoneSimMemo(stones, 25)
+	assert.Equal(t, stonesCount, 55312)
+}
+
+func TestFullPart1Memo(t *testing.T) {
+	content := lib.ReadInput("input.txt")
+	assert.NotEqual(t, content, "")
+
+	stones := lib.ParseIntLineFields(content)
+	stoneCount := RunStoneSimMemo(stones, 25)
+	assert.Equal(t, stoneCount, 193269)
+}
+
+func TestFullPart2(t *testing.T) {
+	content := lib.ReadInput("input.txt")
+	assert.NotEqual(t, content, "")
+
+	stones := lib.ParseIntLineFields(content)
+	stoneCount := RunStoneSimMemo(stones, 75)
+	assert.Equal(t, stoneCount, 228449040027793)
+}
