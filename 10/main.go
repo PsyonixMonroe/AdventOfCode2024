@@ -5,6 +5,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/PsyonixMonroe/AOCLib/lib"
 )
 
 func ReadInput(filename string) string {
@@ -17,13 +19,19 @@ func ReadInput(filename string) string {
 	return string(content)
 }
 
-type TopoMap struct {
-	grid    []int
-	rows    int
-	columns int
+type Number int
+
+func (i Number) Equal(b any) bool {
+	return i == b
 }
 
-func (m TopoMap) loc(row int, column int) int {
+type TopoMap struct {
+	grid    []int
+	rows    Number
+	columns Number
+}
+
+func (m TopoMap) loc(row Number, column Number) Number {
 	if row < 0 {
 		fmt.Fprintf(os.Stderr, "Unable to find loc, row is negative: %d\n", row)
 		return -1
@@ -67,7 +75,7 @@ func ParseTopoMap(content string) TopoMap {
 		}
 	}
 
-	return TopoMap{grid: grid, rows: rowCount, columns: columnCount}
+	return TopoMap{grid: grid, rows: Number(rowCount), columns: Number(columnCount)}
 }
 
 func FindTrails(m TopoMap) int {
@@ -84,18 +92,18 @@ func FindTrails(m TopoMap) int {
 	return sum
 }
 
-func WalkTrail(m TopoMap, currentRow int, currentColumn int) []int {
+func WalkTrail(m TopoMap, currentRow Number, currentColumn Number) []Number {
 	currentHeight := m.grid[m.loc(currentRow, currentColumn)]
 	if currentHeight == 9 {
-		return []int{m.loc(currentRow, currentColumn)}
+		return []Number{m.loc(currentRow, currentColumn)}
 	}
 
-	summits := []int{}
+	summits := []Number{}
 	if currentRow > 0 {
 		// check up
 		nextLoc := m.grid[m.loc(currentRow-1, currentColumn)]
 		if nextLoc == currentHeight+1 {
-			summits = mergeDistinct(summits, WalkTrail(m, currentRow-1, currentColumn))
+			summits = lib.MergeDistinct(summits, WalkTrail(m, currentRow-1, currentColumn))
 		}
 	}
 
@@ -103,7 +111,7 @@ func WalkTrail(m TopoMap, currentRow int, currentColumn int) []int {
 		// check left
 		nextLoc := m.grid[m.loc(currentRow, currentColumn-1)]
 		if nextLoc == currentHeight+1 {
-			summits = mergeDistinct(summits, WalkTrail(m, currentRow, currentColumn-1))
+			summits = lib.MergeDistinct(summits, WalkTrail(m, currentRow, currentColumn-1))
 		}
 	}
 
@@ -111,7 +119,7 @@ func WalkTrail(m TopoMap, currentRow int, currentColumn int) []int {
 		// check down
 		nextLoc := m.grid[m.loc(currentRow+1, currentColumn)]
 		if nextLoc == currentHeight+1 {
-			summits = mergeDistinct(summits, WalkTrail(m, currentRow+1, currentColumn))
+			summits = lib.MergeDistinct(summits, WalkTrail(m, currentRow+1, currentColumn))
 		}
 	}
 
@@ -119,7 +127,7 @@ func WalkTrail(m TopoMap, currentRow int, currentColumn int) []int {
 		// check right
 		nextLoc := m.grid[m.loc(currentRow, currentColumn+1)]
 		if nextLoc == currentHeight+1 {
-			summits = mergeDistinct(summits, WalkTrail(m, currentRow, currentColumn+1))
+			summits = lib.MergeDistinct(summits, WalkTrail(m, currentRow, currentColumn+1))
 		}
 	}
 
@@ -140,13 +148,13 @@ func FindScoreTrailHeads(m TopoMap) int {
 	return sum
 }
 
-func WalkTrailScore(m TopoMap, currentRow int, currentColumn int) []int {
+func WalkTrailScore(m TopoMap, currentRow Number, currentColumn Number) []Number {
 	currentHeight := m.grid[m.loc(currentRow, currentColumn)]
 	if currentHeight == 9 {
-		return []int{m.loc(currentRow, currentColumn)}
+		return []Number{m.loc(currentRow, currentColumn)}
 	}
 
-	summits := []int{}
+	summits := []Number{}
 	if currentRow > 0 {
 		// check up
 		nextLoc := m.grid[m.loc(currentRow-1, currentColumn)]
@@ -180,24 +188,4 @@ func WalkTrailScore(m TopoMap, currentRow int, currentColumn int) []int {
 	}
 
 	return summits
-}
-
-func mergeDistinct(a []int, b []int) []int {
-	merged := make([]int, len(a))
-	copy(merged, a)
-	for _, val := range b {
-		merged = appendDistinct(merged, val)
-	}
-
-	return merged
-}
-
-func appendDistinct(src []int, newItem int) []int {
-	for _, value := range src {
-		if value == newItem {
-			return src
-		}
-	}
-
-	return append(src, newItem)
 }
