@@ -19,19 +19,13 @@ func ReadInput(filename string) string {
 	return string(content)
 }
 
-type Number int
-
-func (i Number) Equal(b any) bool {
-	return i == b
-}
-
 type TopoMap struct {
 	grid    []int
-	rows    Number
-	columns Number
+	rows    int
+	columns int
 }
 
-func (m TopoMap) loc(row Number, column Number) Number {
+func (m TopoMap) loc(row int, column int) int {
 	if row < 0 {
 		fmt.Fprintf(os.Stderr, "Unable to find loc, row is negative: %d\n", row)
 		return -1
@@ -75,7 +69,7 @@ func ParseTopoMap(content string) TopoMap {
 		}
 	}
 
-	return TopoMap{grid: grid, rows: Number(rowCount), columns: Number(columnCount)}
+	return TopoMap{grid: grid, rows: rowCount, columns: columnCount}
 }
 
 func FindTrails(m TopoMap) int {
@@ -92,13 +86,13 @@ func FindTrails(m TopoMap) int {
 	return sum
 }
 
-func WalkTrail(m TopoMap, currentRow Number, currentColumn Number) []Number {
+func WalkTrail(m TopoMap, currentRow int, currentColumn int) []int {
 	currentHeight := m.grid[m.loc(currentRow, currentColumn)]
 	if currentHeight == 9 {
-		return []Number{m.loc(currentRow, currentColumn)}
+		return []int{m.loc(currentRow, currentColumn)}
 	}
 
-	summits := []Number{}
+	summits := []int{}
 	if currentRow > 0 {
 		// check up
 		nextLoc := m.grid[m.loc(currentRow-1, currentColumn)]
@@ -148,13 +142,13 @@ func FindScoreTrailHeads(m TopoMap) int {
 	return sum
 }
 
-func WalkTrailScore(m TopoMap, currentRow Number, currentColumn Number) []Number {
+func WalkTrailScore(m TopoMap, currentRow int, currentColumn int) []int {
 	currentHeight := m.grid[m.loc(currentRow, currentColumn)]
 	if currentHeight == 9 {
-		return []Number{m.loc(currentRow, currentColumn)}
+		return []int{m.loc(currentRow, currentColumn)}
 	}
 
-	summits := []Number{}
+	summits := []int{}
 	if currentRow > 0 {
 		// check up
 		nextLoc := m.grid[m.loc(currentRow-1, currentColumn)]
