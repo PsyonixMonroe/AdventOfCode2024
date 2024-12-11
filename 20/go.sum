@@ -1,2 +1,10 @@
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241211031333-7f460223cf17 h1:Abcrlosub93RG6b5lkInHibK4FlR0mfB9Oj+FtpKBAg=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241211031333-7f460223cf17/go.mod h1:YqcCHoLOu3jjbfHolgsT/NVOH1gXK4Acp67/83bgmvY=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241211043128-ee496080b5af h1:5NutuFoNo+eQMH6mYmDFNYRgVWdTc580uf/2fbwtu5I=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241211043128-ee496080b5af/go.mod h1:gnQngVX+Jo5UQ9QgSppoo2IkYUBPBvXnR0JJpRaYy9o=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241211043949-6678f8452f18 h1:mz0s7radBOiVVh4YquIF6FBurvPmLSfM9zYa7Kiucx4=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241211043949-6678f8452f18/go.mod h1:gnQngVX+Jo5UQ9QgSppoo2IkYUBPBvXnR0JJpRaYy9o=
 github.com/go-playground/assert/v2 v2.2.0 h1:JvknZsQTYeFEAhQwI4qEt9cyV5ONwRHC+lYKSsYSR8s=
 github.com/go-playground/assert/v2 v2.2.0/go.mod h1:VDjEfimB/XKnb+ZQfWdccd7VUvScMdVu0Titje2rxJ4=
+golang.org/x/exp v0.0.0-20241210194714-1829a127f884 h1:Y/Mj/94zIQQGHVSv1tTtQBDaQaJe62U9bkDZKKyhPCU=
+golang.org/x/exp v0.0.0-20241210194714-1829a127f884/go.mod h1:qj5a5QZpwLU2NLQudwIN5koi3beDhSAlJwa67PuM98c=
