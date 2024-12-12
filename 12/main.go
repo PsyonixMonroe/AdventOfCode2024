@@ -47,7 +47,7 @@ func MarkGrid(grid *lib.Grid[Plot]) {
 	}
 }
 
-func ScoreGrid(grid lib.Grid[Plot]) int {
+func ScoreGrid(grid lib.Grid[Plot], scoreFunc func(grid lib.Grid[Plot], plot Plot) int) int {
 	score := 0
 	for i := range grid.Rows() {
 		for j := range grid.Columns() {
@@ -62,36 +62,29 @@ func ScoreGrid(grid lib.Grid[Plot]) int {
 				for plotOpt := workQueue.Dequeue(); plotOpt.Exists(); {
 					numPlots++
 					plot := plotOpt.Get()
-					if plot.fenceUp {
-						numFence++
-					} else {
+					numFence += scoreFunc(grid, *plot)
+					if !plot.fenceUp {
 						adjPlot := grid.Get(plot.posX-1, plot.posY).Get()
 						if adjPlot.plant == currentPlot.plant && !adjPlot.scored {
 							adjPlot.scored = true
 							workQueue.Enqueue(adjPlot)
 						}
 					}
-					if plot.fenceDown {
-						numFence++
-					} else {
+					if !plot.fenceDown {
 						adjPlot := grid.Get(plot.posX+1, plot.posY).Get()
 						if adjPlot.plant == currentPlot.plant && !adjPlot.scored {
 							adjPlot.scored = true
 							workQueue.Enqueue(adjPlot)
 						}
 					}
-					if plot.fenceLeft {
-						numFence++
-					} else {
+					if !plot.fenceLeft {
 						adjPlot := grid.Get(plot.posX, plot.posY-1).Get()
 						if adjPlot.plant == currentPlot.plant && !adjPlot.scored {
 							adjPlot.scored = true
 							workQueue.Enqueue(adjPlot)
 						}
 					}
-					if plot.fenceRight {
-						numFence++
-					} else {
+					if !plot.fenceRight {
 						adjPlot := grid.Get(plot.posX, plot.posY+1).Get()
 						if adjPlot.plant == currentPlot.plant && !adjPlot.scored {
 							adjPlot.scored = true
@@ -104,6 +97,24 @@ func ScoreGrid(grid lib.Grid[Plot]) int {
 				score += numPlots * numFence
 			}
 		}
+	}
+
+	return score
+}
+
+func ScoreFence(grid lib.Grid[Plot], plot Plot) int {
+	score := 0
+	if plot.fenceUp {
+		score++
+	}
+	if plot.fenceDown {
+		score++
+	}
+	if plot.fenceLeft {
+		score++
+	}
+	if plot.fenceRight {
+		score++
 	}
 
 	return score

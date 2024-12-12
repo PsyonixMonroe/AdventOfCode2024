@@ -14,7 +14,7 @@ func TestSimplePart1(t *testing.T) {
 	grid := lib.ParseObjectGridFromRunes(content, CreatePlot)
 	MarkGrid(&grid)
 
-	score := ScoreGrid(grid)
+	score := ScoreGrid(grid, ScoreFence)
 	assert.Equal(t, score, 140)
 }
 
@@ -25,7 +25,7 @@ func TestSimple2Part1(t *testing.T) {
 	grid := lib.ParseObjectGridFromRunes(content, CreatePlot)
 	MarkGrid(&grid)
 
-	score := ScoreGrid(grid)
+	score := ScoreGrid(grid, ScoreFence)
 	assert.Equal(t, score, 772)
 }
 
@@ -36,7 +36,7 @@ func TestSimple3Part1(t *testing.T) {
 	grid := lib.ParseObjectGridFromRunes(content, CreatePlot)
 	MarkGrid(&grid)
 
-	score := ScoreGrid(grid)
+	score := ScoreGrid(grid, ScoreFence)
 	assert.Equal(t, score, 1930)
 }
 
@@ -47,6 +47,6 @@ func TestFullPart1(t *testing.T) {
 	grid := lib.ParseObjectGridFromRunes(content, CreatePlot)
 	MarkGrid(&grid)
 
-	score := ScoreGrid(grid)
+	score := ScoreGrid(grid, ScoreFence)
 	assert.Equal(t, score, 1370258)
 }
