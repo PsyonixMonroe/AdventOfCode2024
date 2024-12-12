@@ -119,3 +119,52 @@ func ScoreFence(grid lib.Grid[Plot], plot Plot) int {
 
 	return score
 }
+
+func ScoreCorner(grid lib.Grid[Plot], plot Plot) int {
+	score := 0
+	adjUp := grid.Get(plot.posX-1, plot.posY)
+	adjDown := grid.Get(plot.posX+1, plot.posY)
+	adjLeft := grid.Get(plot.posX, plot.posY-1)
+	adjRight := grid.Get(plot.posX, plot.posY+1)
+
+	// exterior corners
+	if plot.fenceUp && plot.fenceLeft {
+		// topleft corner
+		score++
+	}
+	if plot.fenceUp && plot.fenceRight {
+		// topright corner
+		score++
+	}
+	if plot.fenceDown && plot.fenceLeft {
+		// bottomleft corner
+		score++
+	}
+	if plot.fenceDown && plot.fenceRight {
+		// bottomright corner
+		score++
+	}
+
+	// interior corners
+	if !plot.fenceUp && !plot.fenceRight && adjUp.Get().fenceRight && adjRight.Get().fenceUp {
+		// topright corner
+		score++
+	}
+
+	if !plot.fenceUp && !plot.fenceLeft && adjUp.Get().fenceLeft && adjLeft.Get().fenceUp {
+		// topleft corner
+		score++
+	}
+
+	if !plot.fenceDown && !plot.fenceRight && adjDown.Get().fenceRight && adjRight.Get().fenceDown {
+		// bottomright corner
+		score++
+	}
+
+	if !plot.fenceDown && !plot.fenceLeft && adjDown.Get().fenceLeft && adjLeft.Get().fenceDown {
+		// bottomleft corner
+		score++
+	}
+
+	return score
+}
