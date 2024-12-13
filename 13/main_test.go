@@ -1,6 +1,7 @@
 package main
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/go-playground/assert/v2"
@@ -9,4 +10,46 @@ import (
 func TestSimplePart1(t *testing.T) {
 	content := ReadInput("test.txt")
 	assert.NotEqual(t, content, "")
+	machines := ParseMachines(content)
+
+	numPrizes, totalTokens := ProcessMachines(machines)
+	assert.Equal(t, numPrizes, 2)
+	assert.Equal(t, totalTokens, 480)
+}
+
+func TestSolveEquation(t *testing.T) {
+	buttonA := Location{x: 94, y: 34}
+	buttonB := Location{x: 22, y: 67}
+	prize := Location{x: 8400, y: 5400}
+
+	a, b := SolveEquation(prize, buttonA, buttonB)
+	assert.Equal(t, a, 80)
+	assert.Equal(t, b, 40)
+}
+
+func TestSolveEquationNoSolution(t *testing.T) {
+	buttonA := Location{x: 26, y: 66}
+	buttonB := Location{x: 67, y: 21}
+	prize := Location{x: 12748, y: 12176}
+
+	a, b := SolveEquation(prize, buttonA, buttonB)
+	assert.Equal(t, a, -1)
+	assert.Equal(t, b, -1)
+}
+
+func TestRegexDigits(t *testing.T) {
+	re := regexp.MustCompile(`Button A: X\+(\d+), Y\+(\d+)`)
+	loc := getRegexMatches("Button A: X+12, Y+20", re)
+	assert.Equal(t, int(loc.x), 12)
+	assert.Equal(t, int(loc.y), 20)
+}
+
+func TestFullPart1(t *testing.T) {
+	content := ReadInput("input.txt")
+	assert.NotEqual(t, content, "")
+	machines := ParseMachines(content)
+
+	numPrizes, totalTokens := ProcessMachines(machines)
+	assert.Equal(t, numPrizes, 186)
+	assert.Equal(t, totalTokens, 39996)
 }
