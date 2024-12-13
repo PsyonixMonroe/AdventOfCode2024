@@ -26,10 +26,18 @@ type Location struct {
 	y float64
 }
 
+func (l Location) String() string {
+	return fmt.Sprintf("[%f, %f]", l.x, l.y)
+}
+
 type Machine struct {
 	buttonA Location
 	buttonB Location
 	prize   Location
+}
+
+func (m Machine) String() string {
+	return fmt.Sprintf("Machine{buttonA:%v, buttonB:%v, prize: %v}", m.buttonA, m.buttonB, m.prize)
 }
 
 func ParseMachines(content string) []Machine {
@@ -54,6 +62,18 @@ func ParseMachines(content string) []Machine {
 		prize := getRegexMatches(prizeLine, prizeRegex)
 		machines = append(machines, Machine{buttonA: buttonA, buttonB: buttonB, prize: prize})
 		inLines = inLines[3:]
+	}
+
+	return machines
+}
+
+func ParseMachinesCorrected(content string) []Machine {
+	originalMachines := ParseMachines(content)
+	machines := []Machine{}
+
+	for _, machine := range originalMachines {
+		newPrize := Location{machine.prize.x + float64(10000000000000.0), machine.prize.y + float64(10000000000000.0)}
+		machines = append(machines, Machine{buttonA: machine.buttonA, buttonB: machine.buttonB, prize: newPrize})
 	}
 
 	return machines
@@ -99,7 +119,7 @@ func SolveEquation(prize Location, buttonA Location, buttonB Location) (int, int
 	checkX := float64(a)*buttonA.x + float64(b)*buttonB.x
 	checkY := float64(a)*buttonA.y + float64(b)*buttonB.y
 
-	if checkX != prize.x || checkY != prize.y || a > 100 || b > 100 {
+	if checkX != prize.x || checkY != prize.y {
 		return -1, -1
 	}
 
