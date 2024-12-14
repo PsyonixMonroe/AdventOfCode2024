@@ -39,7 +39,7 @@ func ParseDrones(content string) []Drone {
 }
 
 func SimulateDrones(drones []Drone, height int, width int, iterations int) []Drone {
-	for range iterations {
+	for i := range iterations {
 		newDrones := []Drone{}
 		for _, drone := range drones {
 			newLocX := drone.locX + drone.velX
@@ -57,8 +57,45 @@ func SimulateDrones(drones []Drone, height int, width int, iterations int) []Dro
 			newDrones = append(newDrones, Drone{locX: locX, locY: locY, velX: drone.velX, velY: drone.velY})
 		}
 		drones = newDrones
+		PlotDrones(drones, height, width, i+1)
 	}
 	return drones
+}
+
+func PlotDrones(drones []Drone, height int, width int, currentIteration int) {
+	grid := lib.GetGrid[rune](height, width)
+	for i := range height {
+		for j := range width {
+			grid.Put('.', i, j)
+		}
+	}
+	for _, drone := range drones {
+		grid.Put('X', drone.locX, drone.locY)
+	}
+	if HasTree(grid) {
+		fmt.Fprintf(os.Stderr, "========= %d ========\n", currentIteration)
+		grid.Print(func(r rune) string {
+			return string(r)
+		})
+	}
+}
+
+func HasTree(grid lib.Grid[rune]) bool {
+	for i := range grid.Rows() - 4 {
+		for j := range grid.Columns() - 4 {
+			found := true
+			for subI := range 4 {
+				for subJ := range 4 {
+					found = found && (*grid.Get(i+subI, j+subJ).Get() == 'X')
+				}
+			}
+			if found {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func CalculateSafety(drones []Drone, height int, width int) int {

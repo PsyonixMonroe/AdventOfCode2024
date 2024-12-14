@@ -44,3 +44,12 @@ func TestFullPart1(t *testing.T) {
 	score := CalculateSafety(drones, 103, 101)
 	assert.Equal(t, score, 218433348)
 }
+
+func TestFindTreePart2(t *testing.T) {
+	content := lib.ReadInput("input.txt")
+	assert.NotEqual(t, content, "")
+
+	drones := ParseDrones(content)
+
+	_ = SimulateDrones(drones, 103, 101, 6511)
+}

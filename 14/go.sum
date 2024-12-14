@@ -12,6 +12,10 @@ github.com/PsyonixMonroe/AOCLib v0.0.0-20241212151825-af7c329a159e h1:U3Xz2uQpfM
 github.com/PsyonixMonroe/AOCLib v0.0.0-20241212151825-af7c329a159e/go.mod h1:gnQngVX+Jo5UQ9QgSppoo2IkYUBPBvXnR0JJpRaYy9o=
 github.com/PsyonixMonroe/AOCLib v0.0.0-20241212185546-317937c73cde h1:EGBk4oSER13P/XDyNKfJYxEVqR24WDGxhVPuGO1rwUs=
 github.com/PsyonixMonroe/AOCLib v0.0.0-20241212185546-317937c73cde/go.mod h1:gnQngVX+Jo5UQ9QgSppoo2IkYUBPBvXnR0JJpRaYy9o=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241214060052-8d3345165b48 h1:xQBKrLq8mx1sRNz0ndlTT//HI4DdV1UrZDcZwvoG+fQ=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241214060052-8d3345165b48/go.mod h1:gnQngVX+Jo5UQ9QgSppoo2IkYUBPBvXnR0JJpRaYy9o=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241214060410-5cd6b2352f3d h1:qI6/MWh50D4EIFrOb9yRDMbBjcRn4FJoVzvxsuxm6h0=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241214060410-5cd6b2352f3d/go.mod h1:gnQngVX+Jo5UQ9QgSppoo2IkYUBPBvXnR0JJpRaYy9o=
 github.com/go-playground/assert/v2 v2.2.0 h1:JvknZsQTYeFEAhQwI4qEt9cyV5ONwRHC+lYKSsYSR8s=
 github.com/go-playground/assert/v2 v2.2.0/go.mod h1:VDjEfimB/XKnb+ZQfWdccd7VUvScMdVu0Titje2rxJ4=
 golang.org/x/exp v0.0.0-20241210194714-1829a127f884 h1:Y/Mj/94zIQQGHVSv1tTtQBDaQaJe62U9bkDZKKyhPCU=
