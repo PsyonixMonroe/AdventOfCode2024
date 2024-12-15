@@ -10,6 +10,12 @@ github.com/PsyonixMonroe/AOCLib v0.0.0-20241211222457-d7ae85e4d4ed h1:MXB3IYwJ9J
 github.com/PsyonixMonroe/AOCLib v0.0.0-20241211222457-d7ae85e4d4ed/go.mod h1:gnQngVX+Jo5UQ9QgSppoo2IkYUBPBvXnR0JJpRaYy9o=
 github.com/PsyonixMonroe/AOCLib v0.0.0-20241212151825-af7c329a159e h1:U3Xz2uQpfMlCxJJXMtADPMCDMKR+SgOYd03aPegERbw=
 github.com/PsyonixMonroe/AOCLib v0.0.0-20241212151825-af7c329a159e/go.mod h1:gnQngVX+Jo5UQ9QgSppoo2IkYUBPBvXnR0JJpRaYy9o=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241214060410-5cd6b2352f3d h1:qI6/MWh50D4EIFrOb9yRDMbBjcRn4FJoVzvxsuxm6h0=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241214060410-5cd6b2352f3d/go.mod h1:gnQngVX+Jo5UQ9QgSppoo2IkYUBPBvXnR0JJpRaYy9o=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241215155800-181fd530d79e h1:29wA52hm8llylsxqzmTULjad+Eb0fIIegp9R3TcofhA=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241215155800-181fd530d79e/go.mod h1:gnQngVX+Jo5UQ9QgSppoo2IkYUBPBvXnR0JJpRaYy9o=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241215161544-5ce6c0ce37bc h1:EdQdOXYPxYPqn8GRhkGqAEECofdYNDu4bT07v4NWxFc=
+github.com/PsyonixMonroe/AOCLib v0.0.0-20241215161544-5ce6c0ce37bc/go.mod h1:gnQngVX+Jo5UQ9QgSppoo2IkYUBPBvXnR0JJpRaYy9o=
 github.com/go-playground/assert/v2 v2.2.0 h1:JvknZsQTYeFEAhQwI4qEt9cyV5ONwRHC+lYKSsYSR8s=
 github.com/go-playground/assert/v2 v2.2.0/go.mod h1:VDjEfimB/XKnb+ZQfWdccd7VUvScMdVu0Titje2rxJ4=
 golang.org/x/exp v0.0.0-20241210194714-1829a127f884 h1:Y/Mj/94zIQQGHVSv1tTtQBDaQaJe62U9bkDZKKyhPCU=
