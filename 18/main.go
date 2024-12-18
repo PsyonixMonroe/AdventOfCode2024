@@ -58,6 +58,35 @@ func FindPath(grid lib.Grid[rune], start lib.Location, end lib.Location, bytes [
 	return path
 }
 
+func FindBlockingByte(grid lib.Grid[rune], start lib.Location, end lib.Location, bytes []lib.Location, numBytes int) lib.Location {
+	if len(bytes) <= numBytes {
+		fmt.Fprintf(os.Stderr, "Unable to fill in bytes, not enough bytes provided\n")
+		return lib.Location{X: -1, Y: -1}
+	}
+	for i := range numBytes {
+		byte := bytes[i]
+		grid.Put('#', byte.X, byte.Y)
+	}
+
+	path := lib.FindPath(grid, start, end, isWall, lib.SimpleGridDistanceHVal, lib.SimpleNeighborGDiff)
+	for i, byte := range bytes {
+		if i < numBytes {
+			// already added these
+			continue
+		}
+		grid.Put('#', byte.X, byte.Y)
+		blocksCurrentBest, _ := lib.FindInArray(byte, path)
+		if blocksCurrentBest != -1 {
+			path = lib.FindPath(grid, start, end, isWall, lib.SimpleGridDistanceHVal, lib.SimpleNeighborGDiff)
+			if len(path) == 0 {
+				// found the last byte
+				return byte
+			}
+		}
+	}
+	return lib.Location{X: -1, Y: -1}
+}
+
 func isWall(g lib.Grid[rune], loc lib.Location) bool {
 	return g.IsOOBLocation(loc) || *g.GetLocation(loc).Get() == '#'
 }

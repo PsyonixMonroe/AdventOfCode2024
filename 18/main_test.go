@@ -40,3 +40,37 @@ func TestFullPart1(t *testing.T) {
 	path := FindPath(grid, start, end, byteLocations, numBytes)
 	assert.Equal(t, len(path), 322)
 }
+
+func TestSimplePart2(t *testing.T) {
+	// test parameters
+	gridRows := 7
+	gridColumns := 7
+	numBytes := 12
+
+	content := lib.ReadInput("test.txt")
+	assert.NotEqual(t, content, "")
+	grid, byteLocations := ParseBytes(content, gridRows, gridColumns)
+	assert.NotEqual(t, len(byteLocations), 0)
+
+	start := lib.Location{X: 0, Y: 0}
+	end := lib.Location{X: gridRows - 1, Y: gridColumns - 1}
+	blocker := FindBlockingByte(grid, start, end, byteLocations, numBytes)
+	assert.Equal(t, blocker.Equal(lib.Location{X: 1, Y: 6}), true)
+}
+
+func TestFullPart2(t *testing.T) {
+	// test parameters
+	gridRows := 71
+	gridColumns := 71
+	numBytes := 1024
+
+	content := lib.ReadInput("input.txt")
+	assert.NotEqual(t, content, "")
+	grid, byteLocations := ParseBytes(content, gridRows, gridColumns)
+	assert.NotEqual(t, len(byteLocations), 0)
+
+	start := lib.Location{X: 0, Y: 0}
+	end := lib.Location{X: gridRows - 1, Y: gridColumns - 1}
+	blocker := FindBlockingByte(grid, start, end, byteLocations, numBytes)
+	assert.Equal(t, blocker.Equal(lib.Location{X: 21, Y: 60}), true)
+}
