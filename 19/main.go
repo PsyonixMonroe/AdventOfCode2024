@@ -38,6 +38,55 @@ func ParseInput(content string) ([]string, []string) {
 	return patterns, words
 }
 
+func PrintCache(cache map[string]int) {
+	sb := strings.Builder{}
+	sb.WriteString("{\n")
+
+	for k, v := range cache {
+		sb.WriteString(fmt.Sprintf("\t%s => %d\n", k, v))
+	}
+
+	sb.WriteString("}\n")
+
+	fmt.Fprint(os.Stderr, sb.String())
+}
+
+func CountAllWordsIter(patterns []string, words []string) int {
+	sum := 0
+	countCache := make(map[string]int)
+
+	// we can reuse the trie solution to seed the cache for the patterns
+	for _, pattern := range patterns {
+		root := BuildTrie(patterns, []string{pattern})
+		countCache[pattern] = CountAllWordsTrie(root)
+	}
+
+	for _, word := range words {
+		sum += CountAllWordIter(patterns, "", word, countCache)
+	}
+	return sum
+}
+
+func CountAllWordIter(patterns []string, prefix string, fullWord string, cache map[string]int) int {
+	postFix := fullWord[len(prefix):]
+	cacheCount, found := cache[postFix]
+	if found {
+		return cacheCount
+	}
+
+	sum := 0
+	for _, pattern := range patterns {
+		newPrefix := prefix + pattern
+		if strings.HasPrefix(fullWord, newPrefix) {
+			sum += CountAllWordIter(patterns, newPrefix, fullWord, cache)
+		}
+	}
+
+	cache[postFix] = sum
+
+	return sum
+}
+
 func CountUniqueWordsIter(patterns []string, words []string) int {
 	sum := 0
 	for _, word := range words {
