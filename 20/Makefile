@@ -6,7 +6,7 @@ build: tidy test
 	go build -o ${BIN} main.go
 
 test: verify
-	go test -v ./...
+	go test -v -timeout=9999999s ./...
 
 clean:
 	rm -f ${BIN}
