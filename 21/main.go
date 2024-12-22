@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/PsyonixMonroe/AOCLib/lib"
 )
@@ -215,6 +216,21 @@ func GetUnitDirection(scaleDir lib.Location) lib.Location {
 	return newLoc
 }
 
+func GetBestNumeric(code []rune) []rune {
+	firstPads := GetAllNumeric(lib.Location{X: 3, Y: 2}, code)
+	bestPath := []rune{}
+	bestPathLen := int64(0)
+	for _, firstPad := range firstPads {
+		padLen := RunIterations(firstPad, 25)
+		if len(bestPath) == 0 || padLen < bestPathLen {
+			bestPath = firstPad
+			bestPathLen = padLen
+		}
+	}
+
+	return bestPath
+}
+
 func GetInputForCode(code []rune) []rune {
 	firstPads := GetAllNumeric(lib.Location{X: 3, Y: 2}, code)
 	bestPath := []rune{}
@@ -227,6 +243,106 @@ func GetInputForCode(code []rune) []rune {
 	}
 
 	return bestPath
+}
+
+func GetProduction() map[string][]string {
+	// <v better than v<
+	// <^ better than ^<
+	// v> better than >v
+	// ^> better than >^
+
+	cache := make(map[string][]string)
+	cache["A"] = []string{"A"}
+	cache["^A"] = []string{"<A", ">A"}
+	cache["^^A"] = []string{"<A", "A", ">A"}
+	cache["^^^A"] = []string{"<A", "A", "A", ">A"}
+	cache["^<<A"] = []string{"<A", "v<A", "A", ">>^A"}
+	cache["^^<<A"] = []string{"<A", "A", "v<A", "A", ">>^A"}
+
+	cache["^>A"] = []string{"<A", "v>A", "^A"}
+	cache["^^>A"] = []string{"<A", "A", "v>A", "^A"}
+	cache["^^>>A"] = []string{"<A", "A", "v>A", "A", "^A"}
+
+	cache[">A"] = []string{"vA", "^A"}
+	cache[">>A"] = []string{"vA", "A", "^A"}
+
+	cache["<A"] = []string{"v<<A", ">>^A"}
+	cache["<^A"] = []string{"v<<A", ">^A", ">A"}
+	cache["<^^A"] = []string{"v<<A", ">^A", "A", ">A"}
+
+	cache["<vA"] = []string{"v<<A", ">A", "^>A"}
+
+	cache["<<A"] = []string{"v<<A", "A", ">>^A"}
+	cache["<<^A"] = []string{"v<<A", "A", ">^A", ">A"}
+	cache["<<^^A"] = []string{"v<<A", "A", ">^A", "A", ">A"}
+
+	cache[">^A"] = []string{"vA", "<^A", ">A"}
+	cache[">^^A"] = []string{"vA", "<^A", "A", ">A"}
+	cache[">>^A"] = []string{"vA", "A", "<^A", ">A"}
+	cache[">>^^A"] = []string{"vA", "A", "<^A", "A", ">A"}
+
+	cache[">vvA"] = []string{"vA", "<A", "A", "^>A"}
+	cache[">>vvA"] = []string{"vA", "A", "<A", "A", "^>A"}
+
+	cache["vA"] = []string{"<vA", "^>A"}
+	cache["vvA"] = []string{"<vA", "A", "^>A"}
+	cache["vvvA"] = []string{"<vA", "A", "A", "^>A"}
+
+	cache["v<A"] = []string{"<vA", "<A", ">>^A"}
+	cache["v<<A"] = []string{"<vA", "<A", "A", ">>^A"}
+
+	cache["v>A"] = []string{"<vA", ">A", "^A"}
+	cache["vv>A"] = []string{"<vA", "A", ">A", "^A"}
+	cache["vv>>A"] = []string{"<vA", "A", ">A", "A", "^A"}
+
+	return cache
+}
+
+func RunIterations(path []rune, iterations int) int64 {
+	production := GetProduction()
+	current := make(map[string]int64)
+	splits := strings.Split(string(path), "A")
+	for _, s := range splits[:len(splits)-1] {
+		move := s + "A"
+		curCount, found := current[move]
+		if !found {
+			curCount = 0
+		}
+		current[move] = curCount + 1
+	}
+
+	for range iterations {
+		newLevel := make(map[string]int64)
+
+		for k, v := range current {
+			produced, found := production[k]
+			if !found {
+				fmt.Fprintf(os.Stderr, "Unknown pattern found: %s\n", k)
+				return -1
+			}
+			for _, s := range produced {
+				newLevelCount, found := newLevel[s]
+				if !found {
+					newLevelCount = 0
+				}
+				newLevel[s] = newLevelCount + v
+			}
+		}
+
+		current = newLevel
+	}
+
+	sum := int64(0)
+	for k, v := range current {
+		sum += v * int64(len(k))
+	}
+
+	return sum
+}
+
+func GetInputForCode25(code []rune) int64 {
+	bestPath := GetBestNumeric(code)
+	return RunIterations(bestPath, 25)
 }
 
 func GetVertPath(diff lib.Location) []rune {
@@ -283,14 +399,6 @@ func GetHorzPath(diff lib.Location) []rune {
 	return output
 }
 
-func HorizViable(diff lib.Location, current lib.Location) bool {
-	return current.X != 3 || current.Y == 2 && diff.Y == -1 || current.Y == 1 && diff.Y == 0
-}
-
-func VertViable(diff lib.Location, current lib.Location) bool {
-	return current.Y != 0 || current.X == 2 && diff.X == 0 || current.X == 1 && diff.X == 1 || current.X == 0 && (diff.X == 1 || diff.X == 2)
-}
-
 func GetAllNumeric(current lib.Location, code []rune) [][]rune {
 	paths := [][]rune{}
 	if len(code) == 0 {
@@ -301,31 +409,67 @@ func GetAllNumeric(current lib.Location, code []rune) [][]rune {
 	target := GetKeyLocation(grid, button)
 	subpaths := GetAllNumeric(target, code[1:])
 	diff := lib.Location{X: target.X - current.X, Y: target.Y - current.Y}
-	horizPath := []rune{}
-	vertPath := []rune{}
-	if HorizViable(diff, current) {
-		horizPath = GetHorzPath(diff)
-	}
-	if VertViable(diff, current) {
-		vertPath = GetVertPath(diff)
-	}
-
-	if (len(horizPath) != 0 && string(horizPath) != string(vertPath)) || len(vertPath) == 0 {
-		if len(subpaths) == 0 {
-			paths = append(paths, horizPath)
-		}
-		for _, subpath := range subpaths {
-			paths = append(paths, append(horizPath, subpath...))
+	updo := []rune{}
+	leri := []rune{}
+	for range lib.Abs(diff.X) {
+		if diff.X > 0 {
+			updo = append(updo, 'v')
+		} else {
+			updo = append(updo, '^')
 		}
 	}
 
-	if len(vertPath) != 0 {
-		if len(subpaths) == 0 {
-			paths = append(paths, vertPath)
+	for range lib.Abs(diff.Y) {
+		if diff.Y > 0 {
+			leri = append(leri, '>')
+		} else {
+			leri = append(leri, '<')
 		}
-		for _, subpath := range subpaths {
-			paths = append(paths, append(vertPath, subpath...))
+	}
+
+	move := []rune{}
+	if diff.X == 0 {
+		move = leri
+	}
+	if diff.Y == 0 {
+		move = updo
+	}
+
+	nogo := lib.Location{X: 3, Y: 0}
+	if diff.X > 0 && diff.Y > 0 {
+		// down-right
+		move = append(updo, leri...)
+		if (nogo.Equal(lib.Location{X: current.X + diff.X, Y: current.Y})) {
+			move = append(leri, updo...)
 		}
+	}
+	if diff.X > 0 && diff.Y < 0 {
+		// down-left
+		move = append(leri, updo...)
+		if (nogo.Equal(lib.Location{X: current.X, Y: current.Y + diff.Y})) {
+			move = append(updo, leri...)
+		}
+	}
+	if diff.X < 0 && diff.Y > 0 {
+		// up-right
+		move = append(updo, leri...)
+	}
+	if diff.X < 0 && diff.Y < 0 {
+		// up-left
+		move = append(leri, updo...)
+		// todo
+		if (nogo.Equal(lib.Location{X: current.X, Y: current.Y + diff.Y})) {
+			move = append(updo, leri...)
+		}
+	}
+
+	move = append(move, 'A')
+
+	if len(subpaths) == 0 {
+		paths = append(paths, move)
+	}
+	for _, subpath := range subpaths {
+		paths = append(paths, append(move, subpath...))
 	}
 
 	return paths
@@ -343,7 +487,7 @@ func GetKeyLocation(k lib.Grid[rune], r rune) lib.Location {
 	return lib.Location{X: -1, Y: -1}
 }
 
-func GetComplexityForCode(code []rune, thirdPad []rune) int {
+func GetComplexityForCode(code []rune, thirdPad int64) int64 {
 	strCode := string(code[:len(code)-1])
 	parsedCode, err := strconv.Atoi(strCode)
 	if err != nil {
@@ -351,5 +495,5 @@ func GetComplexityForCode(code []rune, thirdPad []rune) int {
 		return -1
 	}
 
-	return parsedCode * len(thirdPad)
+	return int64(parsedCode) * thirdPad
 }
