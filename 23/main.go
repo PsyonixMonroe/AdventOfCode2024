@@ -104,3 +104,92 @@ func CountNetworkedComputers(connections map[string][]string) int {
 
 	return sum
 }
+
+func FindLanPassword(connections map[string][]string) string {
+	work := []string{}
+	finalSet := ""
+
+	// seed work queue
+	for k, v := range connections {
+		for _, child := range v {
+			set := []string{k, child}
+			sort.Strings(set)
+			work = lib.AppendDistinct(work, fmt.Sprintf("%s,%s", set[0], set[1]))
+		}
+	}
+
+	var idx int
+	addSets := func() (string, bool) {
+		if idx == len(work) {
+			return "", true
+		}
+		item := work[idx]
+		idx += 1
+		return item, false
+	}
+
+	processItem := func(set string) []string {
+		newSets := []string{}
+
+		// parse set into []string for all items in set
+		currentSet := strings.Split(set, ",")
+
+		// get all children of items in set that are not included in set
+		candidates := []string{}
+		for _, included := range currentSet {
+			children := connections[included]
+			for _, child := range children {
+				if !IsInArray(child, currentSet) && !IsInArray(child, candidates) {
+					candidates = append(candidates, child)
+				}
+			}
+		}
+
+		// check if child could be included
+		for _, candidate := range candidates {
+			candConns := connections[candidate]
+			include := true
+			for _, s := range currentSet {
+				if !IsInArray(s, candConns) {
+					// candidate doesn't have s as a connection, drop candidate
+					include = false
+					break
+				}
+			}
+			if include {
+				newSet := append(currentSet, candidate)
+				sort.Strings(newSet)
+				newItem := strings.Join(newSet, ",")
+				newSets = lib.AppendDistinct(newSets, newItem)
+			}
+		}
+
+		return newSets
+	}
+
+	newWork := []string{}
+	collectNewWork := func(input []string) {
+		for _, i := range input {
+			newWork = lib.AppendDistinct(newWork, i)
+		}
+	}
+
+	for len(work) > 0 {
+		idx = 0
+		wp := lib.WorkerPool[string, []string]{NumWorkers: 12, Verbose: false, GetWorkItem: addSets, WorkerFn: processItem, ReducerFn: collectNewWork}
+		wp.Run(context.Background())
+		if len(work) == 1 {
+			finalSet = work[0]
+			break
+		}
+		work = newWork
+		newWork = []string{}
+	}
+
+	return finalSet
+}
+
+func IsInArray(cand string, items []string) bool {
+	idx, _ := lib.FindInArray(cand, items)
+	return idx != -1
+}
