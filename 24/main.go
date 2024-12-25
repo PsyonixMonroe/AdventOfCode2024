@@ -18,6 +18,30 @@ type Equation struct {
 	dest string
 }
 
+type PrimitiveEquation struct {
+	eq         Equation
+	primitives []Term
+}
+
+type Term struct {
+	termName  string
+	regName   string
+	regNumber int
+}
+
+func (t Term) String() string {
+	return t.termName
+}
+
+func (e Equation) String() string {
+	return fmt.Sprintf("%s -> %s %s %s   Primitives: ", e.dest, e.arg1, e.op, e.arg2)
+	// return fmt.Sprintf("%s -> %s %s %s   Primitives: %v", e.dest, e.arg1, e.op, e.arg2, e.primitives)
+}
+
+func (p PrimitiveEquation) String() string {
+	return fmt.Sprintf("%s -> %s %s %s   Primitives: %v", p.eq.dest, p.eq.arg1, p.eq.op, p.eq.arg2, p.primitives)
+}
+
 func ParseInput(content string) (map[string]uint8, []Equation) {
 	registers := make(map[string]uint8)
 	equations := []Equation{}
@@ -164,4 +188,204 @@ func ReverseArray(a []string) []string {
 	}
 
 	return s
+}
+
+func FindIncorrectTerms(registers map[string]uint8, equations []Equation) []string {
+	incorrectTerms := []string{}
+	rule1 := []string{}
+	rule2 := []string{}
+	lastZBit := GetSpecialBits(equations)
+	// firstZBit := "z00"
+	for _, eq := range equations {
+		if isZTerm(eq.dest) {
+			if eq.op != "XOR" && eq.dest != lastZBit {
+				incorrectTerms = append(incorrectTerms, eq.dest)
+				rule1 = append(rule1, eq.dest)
+			}
+		} else {
+			if eq.op == "XOR" && !(isInputBit(eq.arg1) || isInputBit(eq.arg2)) {
+				incorrectTerms = append(incorrectTerms, eq.dest)
+				rule2 = append(rule2, eq.dest)
+			}
+		}
+	}
+
+	primitiveMap := GetPrimitiveMap(equations)
+	swaps := make(map[string]string)
+	for _, reg := range rule2 {
+		v := primitiveMap[reg]
+		targetReg := getMaxPrimitiveZReg(v)
+		idx, _ := lib.FindInArray(targetReg, rule1)
+		if idx == -1 {
+			fmt.Fprintf(os.Stderr, "couldn't find target %s in %v\n", targetReg, rule1)
+		}
+		swaps[targetReg] = reg
+		swaps[reg] = targetReg
+	}
+
+	newEquations := []Equation{}
+	for _, eq := range equations {
+		target, found := swaps[eq.dest]
+		newEq := eq
+		if found {
+			newEq.dest = target
+		}
+		newEquations = append(newEquations, newEq)
+	}
+
+	originalX := ParseResults(registers, "x")
+	originalY := ParseResults(registers, "y")
+
+	result := ProcessEquations(registers, newEquations)
+	testZ := ParseResults(result, "z")
+
+	actualZ := originalX + originalY
+	fmt.Fprintf(os.Stderr, "origX: %d, 0%s\n", originalX, strconv.FormatInt(originalX, 2))
+	fmt.Fprintf(os.Stderr, "origY: %d, 0%s\n", originalY, strconv.FormatInt(originalY, 2))
+	fmt.Fprintf(os.Stderr, "actlZ: %d, %s\n", actualZ, strconv.FormatInt(actualZ, 2))
+	fmt.Fprintf(os.Stderr, "testZ: %d, %s\n", testZ, strconv.FormatInt(testZ, 2))
+	xorTest := actualZ ^ testZ
+	fmt.Fprintf(os.Stderr, "XOR %14d, %s\n", 0, strconv.FormatInt(xorTest, 2))
+
+	return incorrectTerms
+}
+
+func getSortedPrims(terms []Term) []string {
+	prims := []string{}
+	for _, t := range terms {
+		prims = append(prims, t.termName)
+	}
+	sort.Strings(prims)
+	return prims
+}
+
+func getMaxPrimitiveZReg(pEq PrimitiveEquation) string {
+	maxPrim := 0
+	for _, prim := range pEq.primitives {
+		if prim.regNumber > maxPrim {
+			maxPrim = prim.regNumber
+		}
+	}
+
+	return fmt.Sprintf("z%02d", maxPrim)
+}
+
+func isInputBit(reg string) bool {
+	return strings.HasPrefix(reg, "x") || strings.HasPrefix(reg, "y")
+}
+
+func GetSpecialBits(equations []Equation) string {
+	lastZBit := ""
+
+	maxZBit := -1
+	for _, eq := range equations {
+		if strings.HasPrefix(eq.dest, "z") {
+			t := GetTerm(eq.dest)
+			if t.regName == "z" && t.regNumber > maxZBit {
+				lastZBit = eq.dest
+				maxZBit = t.regNumber
+			}
+		}
+	}
+
+	return lastZBit
+}
+
+func isZTerm(reg string) bool {
+	return strings.HasPrefix(reg, "z")
+}
+
+func GetPrimitiveMap(equations []Equation) map[string]PrimitiveEquation {
+	// turn equation list into mapping for easy access
+	eqIndex := make(map[string]PrimitiveEquation)
+	for _, eq := range equations {
+		eqIndex[eq.dest] = PrimitiveEquation{eq: eq, primitives: []Term{}}
+	}
+
+	// fill in all of the primitives
+	for name, eq := range eqIndex {
+		prims := GetPrimitives(eq.eq, &eqIndex)
+		eq.primitives = prims
+		eqIndex[name] = eq
+	}
+
+	return eqIndex
+}
+
+func GetPrimitives(eq Equation, eqIndex *map[string]PrimitiveEquation) []Term {
+	eqPrim, found := (*eqIndex)[eq.dest]
+	if found && len(eqPrim.primitives) > 0 {
+		return eqPrim.primitives
+	}
+	primitives := []Term{}
+	if !isSourceWire(eq.arg1) {
+		arg1, found := (*eqIndex)[eq.arg1]
+		if !found {
+			fmt.Fprintf(os.Stderr, "Couldn't find %s in eqIndex\n", eq.arg1)
+		}
+		if len(arg1.primitives) == 0 {
+			prim := GetPrimitives(arg1.eq, eqIndex)
+			arg1 = (*eqIndex)[eq.arg1]
+			arg1.primitives = prim
+			(*eqIndex)[eq.arg1] = arg1
+		}
+		for _, prim := range arg1.primitives {
+			primitives = lib.AppendDistinct(primitives, prim)
+		}
+	} else {
+		primitives = append(primitives, GetTerm(eq.arg1))
+	}
+
+	if !isSourceWire(eq.arg2) {
+		arg2, found := (*eqIndex)[eq.arg2]
+		if !found {
+			fmt.Fprintf(os.Stderr, "Couldn't find %s in eqIndex\n", eq.arg2)
+		}
+		if len(arg2.primitives) == 0 {
+			prim := GetPrimitives(arg2.eq, eqIndex)
+			arg2 = (*eqIndex)[eq.arg2]
+			arg2.primitives = prim
+			(*eqIndex)[eq.arg2] = arg2
+		}
+		for _, prim := range arg2.primitives {
+			primitives = lib.AppendDistinct(primitives, prim)
+		}
+	} else {
+		primitives = append(primitives, GetTerm(eq.arg2))
+	}
+
+	return primitives
+}
+
+func GetTerm(arg string) Term {
+	regex := regexp.MustCompile("([a-zA-Z])([0-9][0-9])")
+	match := regex.FindStringSubmatch(arg)
+	if len(match) != 3 {
+		fmt.Fprintf(os.Stderr, "Unable to parse register name: %s\n", arg)
+	}
+	prefix := match[1]
+	regNumber, err := strconv.Atoi(match[2])
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to parse register number: %s, %v\n", match[2], err)
+	}
+	return Term{termName: arg, regName: prefix, regNumber: regNumber}
+}
+
+func isSourceWire(arg string) bool {
+	return strings.HasPrefix(arg, "x") || strings.HasPrefix(arg, "y") || strings.HasPrefix(arg, "z")
+}
+
+func PrintEquations(eq []PrimitiveEquation) {
+	sb := strings.Builder{}
+	sb.WriteString("[\n")
+
+	for _, e := range eq {
+		sb.WriteString("\t")
+		sb.WriteString(e.String())
+		sb.WriteString("\n")
+	}
+
+	sb.WriteString("]\n")
+
+	fmt.Fprint(os.Stderr, sb.String())
 }
